@@ -1,3 +1,6 @@
+from gi.repository import Atspi
+
+
 class TextTracker:
     def __init__(self):
         self.application = None
@@ -16,18 +19,12 @@ class TextTracker:
 
         self.field = obj.get_name()
 
-        text_iface = obj.get_text_iface()
+        self.cursor = Atspi.Text.get_caret_offset(obj)
 
-        # Dont touch this 3 lines, baraye debug e.
-        print("OBJECT TYPE:", type(obj))
-        print("TEXT IFACE:", type(text_iface))
-        print("TEXT IFACE IS SAME:", text_iface is obj)
+        character_count = Atspi.Text.get_character_count(obj)
 
-        self.cursor = text_iface.get_caret_offset()
-
-        character_count = text_iface.get_character_count()
-
-        self.text = text_iface.get_text(
+        self.text = Atspi.Text.get_text(
+            obj,
             0,
             character_count
         )

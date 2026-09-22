@@ -18,6 +18,11 @@ class TextTracker:
 
         text_iface = obj.get_text_iface()
 
+        # Dont touch this 3 lines, baraye debug e.
+        print("OBJECT TYPE:", type(obj))
+        print("TEXT IFACE:", type(text_iface))
+        print("TEXT IFACE IS SAME:", text_iface is obj)
+
         self.cursor = text_iface.get_caret_offset()
 
         character_count = text_iface.get_character_count()

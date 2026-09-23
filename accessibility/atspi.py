@@ -4,6 +4,10 @@ gi.require_version("Atspi", "2.0")
 
 from gi.repository import Atspi
 
+from accessibility.focus import should_handle
+
+from accessibility.text import is_text_field
+
 from core.text_tracker import TextTracker
 
 
@@ -12,13 +16,21 @@ tracker = TextTracker()
 
 def on_event(event):
     try:
-        obj = event.source
-
-        if not obj.is_text():
+        if not should_handle(event):
             return
 
-        tracker.update(obj)
-        tracker.print(event.type)
+        obj = event.source
+
+        if obj is None:
+            return
+
+        if not is_text_field(obj):
+            return
+
+        changed = tracker.update(obj)
+
+        if changed:
+            tracker.print(event.type)
 
     except Exception as error:
         print(f"AT-SPI error: {error}")

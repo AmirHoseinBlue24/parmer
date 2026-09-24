@@ -9,15 +9,19 @@ editable_roles = (
     Atspi.Role.ENTRY,
     Atspi.Role.TEXT,
     Atspi.Role.COMBO_BOX,
-    Atspi.Role.DOCUMENT_FRAME,
-    Atspi.Role.DOCUMENT_WEB,
 )
 
 
 def is_text_field(obj):
     try:
         role = obj.get_role()
+
+        if role not in editable_roles:
+            return False
+
+        state = obj.get_state_set()
+
+        return state.contains(Atspi.StateType.EDITABLE)
+
     except Exception:
         return False
-
-    return role in editable_roles

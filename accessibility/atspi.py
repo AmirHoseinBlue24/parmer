@@ -5,13 +5,17 @@ gi.require_version("Atspi", "2.0")
 from gi.repository import Atspi
 
 from accessibility.focus import should_handle
-
 from accessibility.text import is_text_field
-
+from core.debouncer import Debouncer
 from core.text_tracker import TextTracker
 
 
 tracker = TextTracker()
+debouncer = Debouncer()
+
+
+def on_text_ready():
+    print("Text is ready for checking, Meow")
 
 
 def on_event(event):
@@ -31,6 +35,9 @@ def on_event(event):
 
         if changed:
             tracker.print(event.type)
+
+            if tracker.text_changed:
+                debouncer.call(on_text_ready)
 
     except Exception as error:
         print(f"AT-SPI error: {error}")

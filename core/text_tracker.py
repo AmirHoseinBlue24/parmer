@@ -43,32 +43,32 @@ class TextTracker:
         self.span = None
 
     def update(self, obj):
-        application = obj.get_application()
+        try:
+            application = obj.get_application()
 
-        application_name = (
-            application.get_name()
-            if application
-            else "Unknown"
-        )
+            application_name = (
+                application.get_name()
+                if application
+                else "Unknown"
+            )
 
-        character_count = Atspi.Text.get_character_count(obj)
+            character_count = Atspi.Text.get_character_count(obj)
 
-        text = Atspi.Text.get_text(
-            obj,
-            0,
-            character_count
-        )
+            text = Atspi.Text.get_text(obj, 0, character_count)
 
-        cursor = Atspi.Text.get_caret_offset(obj)
+            cursor = Atspi.Text.get_caret_offset(obj)
 
-        selection_start = cursor
-        selection_end = cursor
+            selection_start = cursor
+            selection_end = cursor
 
-        if Atspi.Text.get_n_selections(obj) > 0:
-            selection = Atspi.Text.get_selection(obj, 0)
+            if Atspi.Text.get_n_selections(obj) > 0:
+                selection = Atspi.Text.get_selection(obj, 0)
 
-            selection_start = selection.start_text
-            selection_end = selection.end_text
+                selection_start = selection.start_text
+                selection_end = selection.end_text
+
+        except Exception:
+            return False
 
         same_field = (
             application_name == self.application

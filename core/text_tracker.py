@@ -1,6 +1,10 @@
+import gi
+
+gi.require_version("Atspi", "2.0")
+
 from gi.repository import Atspi
 
-
+from core.context import Context
 def changed_span(old_text, new_text):
     if old_text == new_text:
         return None
@@ -114,6 +118,16 @@ class TextTracker:
         self.selection_end = selection_end
 
         return True
+
+    def get_context(self):
+        return Context(
+            text=self.text,
+            cursor=self.cursor,
+            selection_start=self.selection_start,
+            selection_end=self.selection_end,
+            application=self.application,
+            field=self.field,
+        )
 
     def print(self, event_type):
         print("\033[2J\033[H", end="")

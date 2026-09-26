@@ -3,7 +3,8 @@ import gi
 gi.require_version("Atspi", "2.0")
 
 from gi.repository import Atspi
-
+from core.checker import Checker
+from engines.languagetool import LanguageToolEngine
 from accessibility.focus import should_handle
 from accessibility.text import is_text_field
 from core.debouncer import Debouncer
@@ -12,10 +13,17 @@ from core.text_tracker import TextTracker
 
 tracker = TextTracker()
 debouncer = Debouncer()
-
+checker = Checker(engine=LanguageToolEngine())
 
 def on_text_ready():
-    print("Text is ready for checking, Meow")
+    context = tracker.get_context()
+
+    suggestions = checker.check(context)
+
+    print("Suggestions:")
+
+    for suggestion in suggestions:
+        print(suggestion)
 
 
 def on_event(event):

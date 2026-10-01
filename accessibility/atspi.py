@@ -25,6 +25,7 @@ active_state = (None, [])
 
 def on_apply_requested(index):
     global active_object
+    global active_state
 
     print(f"Apply requested: {index}")
 
@@ -35,8 +36,8 @@ def on_apply_requested(index):
 
         return
 
-    if context is None or tracker.text != context.text:
-        print("Apply ignored: text changed")
+    if context is None:
+        print("Apply ignored: no active check")
 
         return
 
@@ -55,6 +56,17 @@ def on_apply_requested(index):
     replacement = replacements[0]
 
     try:
+        live_text = Atspi.Text.get_text(
+            active_object,
+            0,
+            Atspi.Text.get_character_count(active_object),
+        )
+
+        if live_text != context.text:
+            print("Apply ignored: text changed")
+
+            return
+
         Atspi.EditableText.delete_text(
             active_object,
             suggestions[index].start,
@@ -67,6 +79,8 @@ def on_apply_requested(index):
             replacement,
             len(replacement),
         )
+
+        active_state = (None, [])
 
         print("Applied.")
     except Exception as error:
@@ -131,6 +145,7 @@ def on_text_ready():
 
 def on_event(event):
     global active_object
+    global active_state
 
     try:
         if not should_handle(event):
@@ -152,6 +167,8 @@ def on_event(event):
             tracker.print(event.type)
 
             if tracker.text_changed:
+                active_state = (None, [])
+
                 debouncer.call(on_text_ready)
 
     except Exception as error:
